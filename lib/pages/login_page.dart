@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors
+//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'components/forget_password.dart';
 import 'package:my_movie_app/components/my_button.dart';
 import 'package:my_movie_app/components/my_textfield.dart';
-
-import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,11 +19,14 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   // sign user in method
-  void signUserIn() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+  void signUserIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+    } on FirebaseAuthException catch (e) {
+      // No specified type, handles all
+      print('signInWithEmailAndPassword: ${e.code}');
+    }
   }
 
   @override

@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'movie_list_page.dart';
 
@@ -11,6 +12,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return const MovieListPage();
+    return Scaffold(
+      body: MovieListPage(),
+    );
   }
 }

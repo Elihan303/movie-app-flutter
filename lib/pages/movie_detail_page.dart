@@ -1,59 +1,16 @@
-// // ignore_for_file: prefer_const_constructors
-// import 'package:flutter/material.dart';
-// import '../models/movies.dart';
-
-// class MovieDetailPage extends StatelessWidget {
-//   final Movie movie;
-
-//   const MovieDetailPage({super.key, required this.movie});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(movie.title),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             ClipRRect(
-//               borderRadius: BorderRadius.circular(8.0),
-//               child: Image.network(
-//                 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-//                 width: double.infinity,
-//                 fit: BoxFit.cover,
-//               ),
-//             ),
-//             SizedBox(height: 16.0),
-//             Text(movie.title,
-//                 style: Theme.of(context).textTheme.headlineMedium //headline5,
-//                 ),
-//             SizedBox(height: 8.0),
-//             Text(
-//               movie.overview,
-//               style: Theme.of(context).textTheme.bodyMedium,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
+// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import '../api/api_service.dart';
 import '../models/actors.dart';
 import '../models/movies.dart';
-// ignore_for_file: prefer_const_constructors
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
 
-  MovieDetailPage({super.key, required this.movie});
+  const MovieDetailPage({super.key, required this.movie});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MovieDetailPageState createState() => _MovieDetailPageState();
 }
 
