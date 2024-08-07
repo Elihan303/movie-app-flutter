@@ -6,21 +6,22 @@ import 'components/forget_password.dart';
 import 'package:my_movie_app/components/my_button.dart';
 import 'package:my_movie_app/components/my_textfield.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   final Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
+  const RegisterPage({super.key, required this.onTap});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   //controladores
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  // sign user in method
-  void signUserIn() async {
+  // sign up
+  void signUpUser() async {
     showDialog(
         context: context,
         builder: (context) {
@@ -28,9 +29,16 @@ class _LoginPageState extends State<LoginPage> {
         });
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      Navigator.pop(context);
+      if (confirmPasswordController.text == passwordController.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: confirmPasswordController.text,
+        );
+        Navigator.pop(context);
+      } else {
+        Navigator.pop(context);
+        errors('password-no-match');
+      }
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       errors(e.code);
@@ -41,16 +49,15 @@ class _LoginPageState extends State<LoginPage> {
     var text = '';
 
     switch (code) {
-      case 'invalid-email':
-        text = 'Correo erroneo';
+      case 'weak-password':
+        text = 'Contraseña debil';
         break;
-      case 'wrong-password':
-        text = 'Contraseña erroneo';
+      case 'email-already-in-use':
+        text = 'Intente con otro correo';
         break;
-      case 'invalid-credential':
-        text = 'Credenciales invalidas';
+      case 'password-no-match':
+        text = 'La contraseña no coincide';
         break;
-
       default:
         text = 'Ha ocurrido un error';
     }
@@ -81,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 50),
               //logo app
               Icon(
-                Icons.movie,
+                Icons.app_registration_rounded,
                 color: Colors.deepPurpleAccent,
                 size: 100.0,
               ),
@@ -89,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 50),
 
               Text(
-                '¡Bienvenido!',
+                '¡Registrate ya!',
                 style: TextStyle(fontSize: 32.0),
               ),
 
@@ -98,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
               //text field email
               MyTextField(
                 controller: emailController,
-                hintText: 'Escriba su correo...',
+                hintText: 'Correo',
                 obscureText: false,
               ),
               SizedBox(height: 10),
@@ -106,24 +113,29 @@ class _LoginPageState extends State<LoginPage> {
               //text field contraseña
               MyTextField(
                 controller: passwordController,
-                hintText: "Escriba su contraseña",
+                hintText: "Contraseña",
+                obscureText: true,
+              ),
+              SizedBox(height: 10),
+              //text field contraseña
+              MyTextField(
+                controller: confirmPasswordController,
+                hintText: "Confirma su contraseña",
                 obscureText: true,
               ),
 
               SizedBox(height: 10),
 
-              // olvidaste tu contraseña
-              ForgetPassword(),
               SizedBox(height: 30),
               //Boton de inicio de sesion
               MyButton(
-                title: 'Inicia sesion',
-                onTap: signUserIn,
+                title: 'Crear cuenta',
+                onTap: signUpUser,
               ),
               SizedBox(height: 30),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text(
-                  'No tiene cuenta?',
+                  'Ya tienes cuenta?',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
                 SizedBox(
@@ -131,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 GestureDetector(
                   onTap: widget.onTap,
-                  child: Text('Registrate ya!',
+                  child: Text('Inicia sesion!',
                       style: TextStyle(
                           color: Colors.deepPurple,
                           fontWeight: FontWeight.bold)),

@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:my_movie_app/pages/home_page.dart';
-import 'package:my_movie_app/pages/login_page.dart';
+import 'package:my_movie_app/pages/landing_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthPage extends StatelessWidget {
@@ -17,7 +17,7 @@ class AuthPage extends StatelessWidget {
           if (snapshot.hasData) {
             return HomePage();
           } else {
-            return LoginPage();
+            return LandingPage();
           }
         },
       ),
