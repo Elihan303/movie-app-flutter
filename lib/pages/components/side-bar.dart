@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:my_movie_app/pages/favorite_movies_page.dart';
 import 'package:my_movie_app/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -43,7 +44,14 @@ class NavBar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.favorite),
             title: Text('Favoritos'),
-            onTap: () => {},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoriteMoviesPage(),
+                ),
+              )
+            },
           ),
           ListTile(
             leading: Icon(Icons.notifications),

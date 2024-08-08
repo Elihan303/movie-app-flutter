@@ -179,30 +179,42 @@ class _MovieListPageState extends State<MovieListPage> {
                         itemCount: movies?.length,
                         itemBuilder: (context, index) {
                           final movie = movies?[index];
-                          return Container(
-                            width: 120,
-                            margin: EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  width: 120,
-                                  margin: EdgeInsets.symmetric(horizontal: 4.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                          'https://image.tmdb.org/t/p/w500${movie?.posterPath}'),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                )),
-                                Text(
-                                  movie?.title ?? 'No Title',
-                                  overflow: TextOverflow.ellipsis,
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MovieDetailPage(movie: movie!),
                                 ),
-                              ],
+                              );
+                            },
+                            child: Container(
+                              width: 120,
+                              margin: EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      child: Container(
+                                    width: 120,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 4.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://image.tmdb.org/t/p/w500${movie?.posterPath}'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )),
+                                  Text(
+                                    movie?.title ?? 'No Title',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -242,30 +254,42 @@ class _MovieListPageState extends State<MovieListPage> {
                         itemCount: movies?.length,
                         itemBuilder: (context, index) {
                           final movie = movies?[index];
-                          return Container(
-                            width: 120,
-                            margin: EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  width: 120,
-                                  margin: EdgeInsets.symmetric(horizontal: 4.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                          'https://image.tmdb.org/t/p/w500${movie?.posterPath}'),
-                                      fit: BoxFit.cover,
+                          return GestureDetector(
+                            onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         MovieDetailPage(movie: movie!),
+                              //   ),
+                              // );
+                            },
+                            child: Container(
+                              width: 120,
+                              margin: EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      child: Container(
+                                    width: 120,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 4.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://image.tmdb.org/t/p/w500${movie?.posterPath}'),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
+                                  )),
+                                  Text(
+                                    movie?.title ?? 'No Title',
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                )),
-                                Text(
-                                  movie?.title ?? 'No Title',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },

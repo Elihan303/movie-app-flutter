@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../api/api_service.dart';
 import '../models/actors.dart';
@@ -17,11 +18,15 @@ class MovieDetailPage extends StatefulWidget {
 class _MovieDetailPageState extends State<MovieDetailPage> {
   final ApiService _apiService = ApiService();
   late Future<List<Actor>> _cast;
+  bool _isFavorite = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
     _cast = _fetchCast(widget.movie.id);
+    _checkIfFavorite();
   }
 
   Future<List<Actor>> _fetchCast(int movieId) async {
@@ -38,11 +43,62 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     }
   }
 
+  Future<void> _checkIfFavorite() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .doc(widget.movie.id.toString())
+          .get();
+      setState(() {
+        _isFavorite = doc.exists;
+      });
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentReference favoriteRef = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .doc(widget.movie.id.toString());
+
+      if (_isFavorite) {
+        await favoriteRef.delete();
+      } else {
+        await favoriteRef.set({
+          'movieId': widget.movie.id,
+          'title': widget.movie.title,
+          'posterPath': widget.movie.posterPath,
+          'releaseDate': widget.movie.releaseDate,
+          'overview': widget.movie.overview,
+        });
+      }
+
+      setState(() {
+        _isFavorite = !_isFavorite;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.movie.title),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: _isFavorite ? Colors.red : null,
+            ),
+            onPressed: _toggleFavorite,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
@@ -57,22 +113,22 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               widget.movie.title,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Text(
               'Release Date: ${widget.movie.releaseDate}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Text(
               widget.movie.overview,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             FutureBuilder<List<Actor>>(
               future: _cast,
               builder: (context, snapshot) {
@@ -91,7 +147,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         'Actores:',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       ...cast.map((actor) => ListTile(
                             leading: actor.profilePath != null
                                 ? CircleAvatar(
@@ -99,7 +155,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                       'https://image.tmdb.org/t/p/w500${actor.profilePath}',
                                     ),
                                   )
-                                : CircleAvatar(child: Icon(Icons.person)),
+                                : const CircleAvatar(child: Icon(Icons.person)),
                             title: Text(actor.name),
                             subtitle: Text('as ${actor.character}'),
                           )),

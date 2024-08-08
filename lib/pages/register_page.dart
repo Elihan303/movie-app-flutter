@@ -2,7 +2,6 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'components/forget_password.dart';
 import 'package:my_movie_app/components/my_button.dart';
 import 'package:my_movie_app/components/my_textfield.dart';
 
