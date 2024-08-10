@@ -44,8 +44,8 @@ class FavoriteMoviesPage extends StatelessWidget {
                             'https://image.tmdb.org/t/p/w500${favorite['posterPath']}',
                           ),
                           title: Text(favorite['title']),
-                          subtitle:
-                              Text('Release Date: ${favorite['releaseDate']}'),
+                          subtitle: Text(
+                              'Fecha de salida: ${favorite['releaseDate']}'),
                           trailing: IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {

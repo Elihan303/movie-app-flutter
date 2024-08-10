@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:my_movie_app/pages/favorite_movies_page.dart';
-import 'package:my_movie_app/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_movie_app/pages/rated_movies_page.dart';
 
 class NavBar extends StatelessWidget {
   NavBar({super.key});
@@ -50,6 +50,16 @@ class NavBar extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => FavoriteMoviesPage(),
                 ),
+              )
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.star),
+            title: Text('Calificadas'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RatedMoviesPage()),
               )
             },
           ),

@@ -11,7 +11,6 @@ class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage({super.key, required this.movie});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MovieDetailPageState createState() => _MovieDetailPageState();
 }
 
@@ -19,6 +18,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   final ApiService _apiService = ApiService();
   late Future<List<Actor>> _cast;
   bool _isFavorite = false;
+  double _userRating = 0.0;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -27,6 +27,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     super.initState();
     _cast = _fetchCast(widget.movie.id);
     _checkIfFavorite();
+    _getUserRating();
   }
 
   Future<List<Actor>> _fetchCast(int movieId) async {
@@ -54,6 +55,57 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           .get();
       setState(() {
         _isFavorite = doc.exists;
+      });
+    }
+  }
+
+  Future<void> _getUserRating() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('movieRatings')
+          .doc(widget.movie.id.toString())
+          .get();
+      if (doc.exists) {
+        setState(() {
+          _userRating = doc['rating']?.toDouble() ?? 0.0;
+        });
+      }
+    }
+  }
+
+  Future<void> _submitRating(double rating) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentReference ratingRef = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('movieRatings')
+          .doc(widget.movie.id.toString());
+
+      // Save the rating
+      await ratingRef.set({
+        'rating': rating,
+        'posterPath': widget.movie.posterPath,
+        'title': widget.movie.title,
+        'id': widget.movie.id
+      });
+
+      // Save the movie details with rating
+      DocumentReference movieRef =
+          _firestore.collection('movies').doc(widget.movie.id.toString());
+
+      await movieRef.set({
+        'posterPath': widget.movie.posterPath,
+        'title': widget.movie.title,
+        'id': widget.movie.id,
+        'rating': rating,
+      });
+
+      setState(() {
+        _userRating = rating;
       });
     }
   }
@@ -120,13 +172,22 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              'Release Date: ${widget.movie.releaseDate}',
+              'Fecha de salida: ${widget.movie.releaseDate}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 8.0),
             Text(
               widget.movie.overview,
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              'Califica esta pelicula:',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            StarRating(
+              rating: _userRating,
+              onRatingChanged: _submitRating,
             ),
             const SizedBox(height: 16.0),
             FutureBuilder<List<Actor>>(
@@ -140,26 +201,24 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   return Center(child: Text('No cast information available.'));
                 } else {
                   final cast = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Actores:',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                      const SizedBox(height: 8.0),
-                      ...cast.map((actor) => ListTile(
-                            leading: actor.profilePath != null
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      'https://image.tmdb.org/t/p/w500${actor.profilePath}',
-                                    ),
-                                  )
-                                : const CircleAvatar(child: Icon(Icons.person)),
-                            title: Text(actor.name),
-                            subtitle: Text('as ${actor.character}'),
-                          )),
-                    ],
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: cast.length,
+                    itemBuilder: (context, index) {
+                      final actor = cast[index];
+                      return ListTile(
+                        leading: actor.profilePath != null
+                            ? CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  'https://image.tmdb.org/t/p/w500${actor.profilePath}',
+                                ),
+                              )
+                            : const CircleAvatar(child: Icon(Icons.person)),
+                        title: Text(actor.name),
+                        subtitle: Text('es ${actor.character}'),
+                      );
+                    },
                   );
                 }
               },
@@ -167,6 +226,34 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class StarRating extends StatelessWidget {
+  final double rating;
+  final ValueChanged<double> onRatingChanged;
+
+  const StarRating({
+    super.key,
+    required this.rating,
+    required this.onRatingChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: List.generate(5, (index) {
+        final starIndex = index + 1;
+        return IconButton(
+          icon: Icon(
+            starIndex <= rating ? Icons.star : Icons.star_border,
+            color: Colors.amber,
+          ),
+          onPressed: () => onRatingChanged(starIndex.toDouble()),
+        );
+      }),
     );
   }
 }
